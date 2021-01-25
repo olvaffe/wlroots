@@ -7,6 +7,9 @@
 #include "backend/libinput.h"
 #include "util/signal.h"
 
+#include <unistd.h>
+#include <fcntl.h>
+
 static struct wlr_libinput_backend *get_libinput_backend_from_backend(
 		struct wlr_backend *wlr_backend) {
 	assert(wlr_backend_is_libinput(wlr_backend));
@@ -16,7 +19,10 @@ static struct wlr_libinput_backend *get_libinput_backend_from_backend(
 static int libinput_open_restricted(const char *path,
 		int flags, void *_backend) {
 	struct wlr_libinput_backend *backend = _backend;
-	return wlr_session_open_file(backend->session, path);
+	int fd = wlr_session_open_file(backend->session, path);
+	if (fd >= 0)
+		fcntl(fd, F_SETFL, flags);
+	return fd;
 }
 
 static void libinput_close_restricted(int fd, void *_backend) {
@@ -69,6 +75,7 @@ static bool backend_start(struct wlr_backend *wlr_backend) {
 		get_libinput_backend_from_backend(wlr_backend);
 	wlr_log(WLR_DEBUG, "Initializing libinput");
 
+#if 0
 	backend->libinput_context = libinput_udev_create_context(&libinput_impl,
 		backend, backend->session->udev);
 	if (!backend->libinput_context) {
@@ -81,6 +88,17 @@ static bool backend_start(struct wlr_backend *wlr_backend) {
 		wlr_log(WLR_ERROR, "Failed to assign libinput seat");
 		return false;
 	}
+#else
+	backend->libinput_context = libinput_path_create_context(&libinput_impl,
+		backend);
+	if (!backend->libinput_context) {
+		wlr_log(WLR_ERROR, "Failed to create libinput context");
+		return false;
+	}
+
+	libinput_path_add_device(backend->libinput_context, "/dev/input/event0");
+	libinput_path_add_device(backend->libinput_context, "/dev/input/event1");
+#endif
 
 	// TODO: More sophisticated logging
 	libinput_log_set_handler(backend->libinput_context, log_libinput);
