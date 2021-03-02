@@ -360,6 +360,8 @@ static void xdg_surface_handle_surface_commit(struct wl_listener *listener,
 	struct wlr_xdg_surface_v6 *surface =
 		wl_container_of(listener, surface, surface_commit);
 
+	return;
+
 	if (wlr_surface_has_buffer(surface->surface) && !surface->configured) {
 		wl_resource_post_error(surface->resource,
 			ZXDG_SURFACE_V6_ERROR_UNCONFIGURED_BUFFER,
