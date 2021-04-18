@@ -30,6 +30,7 @@ protocols = {
 	'xdg-foreign-unstable-v1': wl_protocol_dir / 'unstable/xdg-foreign/xdg-foreign-unstable-v1.xml',
 	'xdg-foreign-unstable-v2': wl_protocol_dir / 'unstable/xdg-foreign/xdg-foreign-unstable-v2.xml',
 	'xdg-output-unstable-v1': wl_protocol_dir / 'unstable/xdg-output/xdg-output-unstable-v1.xml',
+	'xdg-shell-unstable-v6': wl_protocol_dir / 'unstable/xdg-shell/xdg-shell-unstable-v6.xml',
 	# Other protocols
 	'drm': 'drm.xml',
 	'gtk-primary-selection': 'gtk-primary-selection.xml',
