@@ -8,6 +8,9 @@
 #include "backend/libinput.h"
 #include "util/signal.h"
 
+#include <unistd.h>
+#include <fcntl.h>
+
 static struct wlr_libinput_backend *get_libinput_backend_from_backend(
 		struct wlr_backend *wlr_backend) {
 	assert(wlr_backend_is_libinput(wlr_backend));
@@ -21,6 +24,7 @@ static int libinput_open_restricted(const char *path,
 	if (dev == NULL) {
 		return -1;
 	}
+	fcntl(dev->fd, F_SETFL, flags);
 	return dev->fd;
 }
 
@@ -114,7 +118,21 @@ static bool backend_start(struct wlr_backend *wlr_backend) {
 		if (backend->wlr_device_lists.length == 0) {
 			wlr_log(WLR_ERROR, "libinput initialization failed, no input devices");
 			wlr_log(WLR_ERROR, "Set WLR_LIBINPUT_NO_DEVICES=1 to suppress this check");
+#if 0
 			return false;
+#else
+			wlr_log(WLR_ERROR, "Continuing with hardcoded inputs");
+			libinput_unref(backend->libinput_context);
+			backend->libinput_context = libinput_path_create_context(&libinput_impl,
+				backend);
+			if (!backend->libinput_context) {
+				wlr_log(WLR_ERROR, "Failed to create libinput context");
+				return false;
+			}
+
+			libinput_path_add_device(backend->libinput_context, "/dev/input/event0");
+			libinput_path_add_device(backend->libinput_context, "/dev/input/event1");
+#endif
 		}
 	}
 
