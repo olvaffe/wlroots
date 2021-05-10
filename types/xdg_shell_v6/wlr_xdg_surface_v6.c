@@ -166,9 +166,9 @@ static void xdg_surface_handle_ack_configure(struct wl_client *client,
 		}
 	}
 	if (!found) {
-		wl_resource_post_error(surface->client->resource,
-			ZXDG_SHELL_V6_ERROR_INVALID_SURFACE_STATE,
-			"wrong configure serial: %u", serial);
+		//wl_resource_post_error(surface->client->resource,
+		//	ZXDG_SHELL_V6_ERROR_INVALID_SURFACE_STATE,
+		//	"wrong configure serial: %u", serial);
 		return;
 	}
 	// Then remove old configures from the list
